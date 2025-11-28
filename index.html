@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cinephile Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .quiz-container {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      width: 450px;
+      text-align: center;
+    }
+    .option-btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #444;
+      color: white;
+      transition: 0.3s;
+    }
+    .option-btn:hover {
+      background: #666;
+    }
+    .selected {
+      background: #28a745 !important; /* Green highlight */
+      color: #fff;
+      font-weight: bold;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .nav-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .nav-btn:hover {
+      background: #0056b3;
+    }
+    #finishBtn {
+      background: #dc3545;
+    }
+    #finishBtn:hover {
+      background: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Question text</h2>
+    <div id="options"></div>
+
+    <div class="btn-group">
+      <button id="prevBtn" class="nav-btn">Previous</button>
+      <button id="nextBtn" class="nav-btn">Next</button>
+      <button id="finishBtn" class="nav-btn">Finish</button>
+    </div>
+
+    <h3 id="score"></h3>
+  </div>
+
+  <script>
+  const quizData = [
+  {
+    question: "What is the family motto of House Stark in Game of Thrones?",
+    options: ["Fire and Blood", "Ours is the Fury", "Winter is Coming", "Hear Me Roar"],
+    correct: 2,
+    image : "img/starks.jpg"
+  },
+  {
+    question: "Who says the famous line 'I am the one who knocks' in Breaking Bad?",
+    options: ["Jesse Pinkman", "Walter White", "Hank Schrader", "Gus Fring"],
+    correct: 1,
+    image : "img/breaking-bad.jpg"
+  },
+  {
+    question: "In Peaky Blinders, what is the name of Thomas Shelby’s gang?",
+    options: ["Red Right Hand", "The Blinders", "The Shelby Brothers", "The Peaky Blinders"],
+    correct: 3,
+    image : "img/peaky-blinders.jpg"
+  },
+  {
+    question: "Who played Rust Cohle in True Detective Season 1?",
+    options: ["Matthew McConaughey", "Woody Harrelson", "Colin Farrell", "Mahershala Ali"],
+    correct: 0,
+    image : "img/true-detective.jpg"
+  },
+  {
+    question: "In Money Heist, what city name does the main female narrator use?",
+    options: ["Lisbon", "Tokyo", "Nairobi", "Berlin"],
+    correct: 1,
+    image : "img/tokyo.jpg"
+  },
+  {
+    question: "Which dragon did the Night King kill and resurrect in Game of Thrones?",
+    options: ["Drogon", "Rhaegal", "Viserion", "Balerion"],
+    correct: 2,
+    image : "img/knight-king.jpg"
+  },
+  {
+    question: "In Narcos, who plays Pablo Escobar?",
+    options: ["Pedro Pascal", "Diego Luna", "Wagner Moura", "Gael García Bernal"],
+    correct: 2,
+    image : "img/narcos.jpg"
+  },
+  {
+    question: "In Stranger Things, what is the name of the alternate dimension?",
+    options: ["The Underworld", "The Dark Place", "The Upside Down", "The Shadow Realm"],
+    correct: 2,
+    image : "img/stranger-things.jpg"
+  },
+  {
+    question: "Which HBO miniseries is based on the 1986 nuclear disaster?",
+    options: ["Band of Brothers", "Chernobyl", "The Pacific", "Generation Kill"],
+    correct: 1,
+    image : "img/chernobyl.jpg"
+  },
+  {
+    question: "What is the nickname of Thomas Shelby’s aunt in Peaky Blinders?",
+    options: ["Polly Gray", "Lizzie Stark", "Esme Shelby", "Ada Thorne"],
+    correct: 0,
+    image : "img/polly.jpg"
+  },
+  {
+    question: "In Game of Thrones, who kills the Night King?",
+    options: ["Jon Snow", "Bran Stark", "Arya Stark", "Daenerys Targaryen"],
+    correct: 2,
+    image : "img/arya.jpg"
+  },
+  {
+    question: "In True Detective Season 1, Rust often speaks about:",
+    options: ["Time as a flat circle", "The Devil’s bargain", "Dreams within dreams", "The war on drugs"],
+    correct: 0,
+    image : "img/rust.jpg"
+  }
+];
+
+
+    let currentQ = 0;
+    let selectedAnswers = Array(quizData.length).fill(null);
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const finishBtn = document.getElementById("finishBtn");
+    const scoreEl = document.getElementById("score");
+
+    function loadQuestion() {
+      const q = quizData[currentQ];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+
+      document.body.style.background = `url('${q.image}') no-repeat center center fixed`;
+      document.body.style.backgroundSize = "cover";
+
+      q.options.forEach((option, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.classList.add("option-btn");
+
+        if (selectedAnswers[currentQ] === i) {
+          btn.classList.add("selected");
+        }
+
+        btn.onclick = () => {
+          selectedAnswers[currentQ] = i;
+          loadQuestion();
+        };
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.style.display = currentQ === 0 ? "none" : "inline-block";
+      nextBtn.style.display = currentQ === quizData.length - 1 ? "none" : "inline-block";
+      finishBtn.style.display = currentQ === quizData.length - 1 ? "inline-block" : "none";
+    }
+
+    function calculateScore() {
+      let score = 0;
+      selectedAnswers.forEach((ans, idx) => {
+        if (ans === quizData[idx].correct) {
+          score++;
+        }
+      });
+      return score;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentQ > 0) {
+        currentQ--;
+        loadQuestion();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentQ < quizData.length - 1) {
+        currentQ++;
+        loadQuestion();
+      }
+    });
+
+    finishBtn.addEventListener("click", () => {
+      const score = calculateScore();
+      questionEl.textContent = "Quiz Finished!";
+      optionsEl.innerHTML = "";
+      prevBtn.style.display = "none";
+      nextBtn.style.display = "none";
+      finishBtn.style.display = "none";
+      scoreEl.textContent = `Your Score: ${score}/${quizData.length}`;
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
